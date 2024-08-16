@@ -1,6 +1,8 @@
+require("dotenv").config();
+
 const http = require("http");
 const fs = require("fs");
-const PORT = 3005;
+const PORT = process.env.PORT;
 
 const createServerArgument = (request, response) => {
   response.writeHead(200, { "content-type": "text/html" });
