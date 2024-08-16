@@ -40,8 +40,8 @@ jobs:
           port: 22
           script: |
             cd ${{ secrets.REMOTE_WORKING_DIR }}
-            docker rm -f ${{secrets.PROJECT_NAME}} || true
-            docker rmi ${{secrets.PROJECT_NAME}} || true
+            docker container rm -f ${{secrets.PROJECT_NAME}} || true
+            docker image rm -f ${{secrets.PROJECT_NAME}} || true
 
   deploy:
     needs: init
@@ -61,4 +61,4 @@ jobs:
             rm ${{secrets.PROJECT_NAME}}.tar
             gh release download v${{secrets.CURRENT_VER}} --repo ${{github.repository}} --pattern "${{secrets.PROJECT_NAME}}.tar"
             docker load -i ${{secrets.PROJECT_NAME}}.tar
-            docker run -d -p 3020:3020 --env-file .env ${{secrets.PROJECT_NAME}}
+            docker run -d -p 3020:3020 --env-file .env --name ${{secrets.PROJECT_NAME}} ${{secrets.PROJECT_NAME}}
