@@ -40,6 +40,6 @@ jobs:
           port: 22
           script: |
             cd ${{ secrets.REMOTE_WORKING_DIR }}
-            curl -L -H "Authorization: token ${{ secrets.TOKEN }}" -o nodejs-simple-server.tar https://github.com/${{ github.repository }}/releases/download/v1.0.0/nodejs-simple-server.tar
+            curl -L -H "Authorization: token ${{ secrets.TOKEN }}" https://github.com/${{ github.repository }}/releases/download/v1.0.0/nodejs-simple-server.tar > nodejs-simple-server.tar
             docker load -i nodejs-simple-server.tar
             docker run -d --env-file .env nodejs-simple-server
