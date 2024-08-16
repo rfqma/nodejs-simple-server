@@ -5,35 +5,20 @@ on:
     branches: ["master"]
 
 jobs:
-  build:
-    name: build docker image
+  pre:
+    name: build image, convert tar, github release
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v3
+
       - name: Build docker image
         run: |
           docker build -t nodejs-simple-server .
-
-  tar:
-    needs: build
-    name: convert image to tar
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v3
       - name: Save image to tar
         run: |
           docker save -o nodejs-simple-server.tar nodejs-simple-server
           tar -tf nodejs-simple-server.tar
-
-  release:
-    needs: tar
-    name: release tar to github release
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v3
       - name: Create release
         env:
           GITHUB_TOKEN: ${{secrets.TOKEN}}
@@ -41,7 +26,7 @@ jobs:
           gh release create v1.0.0 nodejs-simple-server.tar --title "v1.0.0" --notes "Release v1.0.0"
 
   deploy:
-    needs: release
+    needs: pre
     name: deploy image in remote vps
     runs-on: ubuntu-latest
 
