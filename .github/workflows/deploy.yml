@@ -40,6 +40,7 @@ jobs:
           port: 22
           script: |
             cd ${{ secrets.REMOTE_WORKING_DIR }}
-            gh release download v1.0.0 --repo ${{github.repository}} --pattern "nodejs-simple-server.tar" --clobber
+            rm nodejs-simple-server.tar
+            gh release download v1.0.0 --repo ${{github.repository}} --pattern "nodejs-simple-server.tar"
             docker load -i nodejs-simple-server.tar
             docker run -d -p 3020:3020 --env-file .env nodejs-simple-server
