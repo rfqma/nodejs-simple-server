@@ -14,16 +14,16 @@ jobs:
 
       - name: Build docker image
         run: |
-          docker build -t nodejs-simple-server .
+          docker build -t ${{secrets.PROJECT_NAME}} .
       - name: Save image to tar
         run: |
-          docker save -o nodejs-simple-server.tar nodejs-simple-server
-          tar -tf nodejs-simple-server.tar
+          docker save -o ${{secrets.PROJECT_NAME}}.tar ${{secrets.PROJECT_NAME}}
+          tar -tf ${{secrets.PROJECT_NAME}}.tar
       - name: Create release
         env:
           GITHUB_TOKEN: ${{secrets.TOKEN}}
         run: |
-          gh release create v1.0.0 nodejs-simple-server.tar --title "v1.0.0" --notes "Release v1.0.0" --latest
+          gh release create v${{secrets.CURRENT_VER}} ${{secrets.PROJECT_NAME}}.tar --title "v${{secrets.CURRENT_VER}}" --notes "Release v${{secrets.CURRENT_VER}}" --latest
 
   deploy:
     needs: pre
@@ -40,7 +40,7 @@ jobs:
           port: 22
           script: |
             cd ${{ secrets.REMOTE_WORKING_DIR }}
-            rm nodejs-simple-server.tar
-            gh release download v1.0.0 --repo ${{github.repository}} --pattern "nodejs-simple-server.tar"
-            docker load -i nodejs-simple-server.tar
-            docker run -d -p 3020:3020 --env-file .env nodejs-simple-server
+            rm ${{secrets.PROJECT_NAME}}.tar
+            gh release download v${{secrets.CURRENT_VER}} --repo ${{github.repository}} --pattern "${{secrets.PROJECT_NAME}}.tar"
+            docker load -i ${{secrets.PROJECT_NAME}}.tar
+            docker run -d -p 3020:3020 --env-file .env ${{secrets.PROJECT_NAME}}
